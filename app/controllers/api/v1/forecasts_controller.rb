@@ -2,7 +2,8 @@ class Api::V1::ForecastsController < ApplicationController
 
     def show
         coords = get_location_coordinates(forecast_params[:location])
-        serialize_open_weather_response(get_weather_by_coordinates(coords))
+        weather = get_weather_by_coordinates(coords)
+        render json: CityWeatherSerializer.new(weather)
     end
 
     private
@@ -18,9 +19,5 @@ class Api::V1::ForecastsController < ApplicationController
     def get_weather_by_coordinates(coords)
         resp = OpenWeatherService.new.get_weather_by_coordinates(coords)
         CityWeather.new(resp)
-    end
-
-    def serialize_open_weather_response(resp)
-        render json: CityWeatherSerializer.new(resp)
     end
 end
