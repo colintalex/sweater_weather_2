@@ -37,6 +37,7 @@ RSpec.describe "Users", type: :request do
     end
 
     it "returns an error if user already exists" do
+      user.valid? ? user.delete : nil
       user = User.create({
         email: 'c@g.com',
         password: 'password',
@@ -58,6 +59,7 @@ RSpec.describe "Users", type: :request do
       expect(body[:data]).to have_key(:attributes)
       expect(body[:data][:attributes]).to have_key(:description)
       expect(body[:data][:attributes][:description]).to eql("Email has already been taken")
+      user.delete
     end
 
     it "returns an error with missing pw_confirm field" do
