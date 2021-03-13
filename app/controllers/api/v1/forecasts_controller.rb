@@ -3,7 +3,7 @@ class Api::V1::ForecastsController < ApplicationController
     def show
         #check for valid coords
         if forecast_params[:location] == ''
-            render json: Error.new("Location can't be empty") 
+            render json: Error.new("Location can't be empty"), status: 400
         else
             coords = get_location_coordinates(forecast_params[:location])
             weather = get_weather_by_coordinates(coords)
