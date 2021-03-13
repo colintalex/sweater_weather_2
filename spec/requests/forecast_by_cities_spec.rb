@@ -74,5 +74,16 @@ RSpec.describe "ForecastByCities", type: :request do
         expect(data[:attributes][:hourly_weather][0]).to_not have_key(:weather)
         expect(data[:attributes][:hourly_weather][0]).to_not have_key(:pop)
     end
+
+    it "returns error with empty query" do
+      get "/api/v1/forecast?location="
+
+      expect(response).to have_http_status(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:description]).to eql("Location can't be empty")
+      expect(data).to_not have_key(:attributes)
+      expect(data).to_not have_key(:id)
+    end
   end
 end
