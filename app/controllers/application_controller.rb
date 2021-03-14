@@ -3,7 +3,7 @@ class ApplicationController < ActionController::API
     private
 
     def authenticate_api_key
-        user = User.find_by(api_key: trip_params['api_key'])
+        user = User.find_by(api_key: api_params['api_key'])
         user.nil? ? bad_api_key : return
     end
 
