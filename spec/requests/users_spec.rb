@@ -37,7 +37,6 @@ RSpec.describe "Users", type: :request do
     end
 
     it "returns an error if user already exists" do
-      user.valid? ? user.delete : nil
       user = User.create({
         email: 'c@g.com',
         password: 'password',
