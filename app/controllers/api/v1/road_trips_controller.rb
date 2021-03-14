@@ -2,7 +2,10 @@ class Api::V1::RoadTripsController < ApplicationController
     before_action :authenticate_api_key
 
     def create
-        trip = RoadTrip.new(full_trip_data[:geo], full_trip_data[:weather])
+        trip_data = {}
+        trip_data[:travel] = full_trip_data[:travel]
+        trip_data[:weather] = full_trip_data[:weather]
+        trip = RoadTrip.new(trip_data[:travel], trip_data[:weather], trip_params)
         render json: RoadTripSerializer.new(trip)
     end
 
@@ -16,17 +19,24 @@ class Api::V1::RoadTripsController < ApplicationController
         params.require(:road_trip).permit(:api_key)
     end
 
-    def get_geo_data(origin, destination)
-        MapQuestService.new.get_travel_data(origin, destination)
+    def get_travel_data(origin, destination)
+        travel_time = MapQuestService.new.request_travel_data(origin, destination)
+        dest_coords = MapQuestService.new.get_coordinates(destination)
+        trip_duration = travel_time[:travel_time][:formattedTime]
+        { destination: dest_coords, eta: trip_duration }
     end
 
     def get_eta_weather_data(destination, eta)
-        OpenWeatherService.new.weather_at_time_and_location(destination, eta)
+        hourly_weather = OpenWeatherService.new.get_weather_by_coordinates(destination)[:hourly]
+        now = Time.now
+        arrival = now + Time.parse(eta).seconds_since_midnight
+        arrival.min > 25 ? index = arrival.hour : index = arrival.hour - 1
+        hourly_weather[4]
     end
 
     def full_trip_data
-        geo_data = get_geo_data(trip_params[:origin], trip_params[:destination])
-        weather_data = get_eta_weather_data(trip_geo_data[:destination], trip_geo_data[:eta])
-        { geo: geo_data, weather: weather_data }
+        travel_data = get_travel_data(trip_params[:origin], trip_params[:destination])
+        weather_data = get_eta_weather_data(travel_data[:destination], travel_data[:eta])
+        { travel: travel_data, weather: weather_data }
     end
 end
