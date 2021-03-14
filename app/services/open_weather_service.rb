@@ -15,4 +15,5 @@ class OpenWeatherService
         end
         json = JSON.parse(resp.body, symbolize_names: true)
     end
+
 end

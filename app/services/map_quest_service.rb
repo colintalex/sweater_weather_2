@@ -13,7 +13,7 @@ class MapQuestService
         json[:results][0][:locations][0][:latLng]
     end
 
-    def get_travel_data(origin, destination)
+    def request_travel_data(origin, destination)
         #get travel time, eta, and coords for each location directions/v2/route
         resp = conn.get("directions/v2/route", { from: origin, to: destination })
         json = JSON.parse(resp.body, symbolize_names: true)
