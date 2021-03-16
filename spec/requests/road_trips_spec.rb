@@ -8,6 +8,7 @@ RSpec.describe "RoadTrips", type: :request do
       password_confirmation: "pass"
     )
   end
+  
   describe "Green Path Tests" do
     it "works with a valid request" do
       params = {
@@ -15,13 +16,13 @@ RSpec.describe "RoadTrips", type: :request do
         "destination": "Pueblo,CO",
         "api_key": @user.api_key
       }
-      post "/api/v1/roadtrip", params: params
+      post "/api/v1/roadtrip", params: { road_trip: params }
 
-      expect(response).to have_http_status(200)
       body = JSON.parse(response.body, symbolize_names: true)
+      expect(response).to have_http_status(200)
 
       expect(body[:data]).to have_key(:id)
-      expect(body[:data][:id]).to eql("null")
+      expect(body[:data][:id]).to eql(nil)
       expect(body[:data]).to have_key(:type)
       expect(body[:data][:type]).to eql("roadtrip")
       expect(body[:data]).to have_key(:attributes)
@@ -43,13 +44,13 @@ RSpec.describe "RoadTrips", type: :request do
         "destination": "Beijing",
         "api_key": @user.api_key
       }
-      post "/api/v1/roadtrip", params: params
+      post "/api/v1/roadtrip", params: { body: params }
 
       expect(response).to have_http_status(200)
       body = JSON.parse(response.body, symbolize_names: true)
       
       expect(body[:data]).to have_key(:id)
-      expect(body[:data][:id]).to eql("null")
+      expect(body[:data][:id]).to eql(nil)
       expect(body[:data]).to have_key(:type)
       expect(body[:data][:type]).to eql("roadtrip")
       expect(body[:data]).to have_key(:attributes)
@@ -69,7 +70,7 @@ RSpec.describe "RoadTrips", type: :request do
         "destination": "Beijing",
         "api_key": @user.api_key
       }
-      post "/api/v1/roadtrip", params: params
+      post "/api/v1/roadtrip", params: { body: params }
 
       expect(response).to have_http_status(400)
       body = JSON.parse(response.body, symbolize_names: true)
@@ -81,7 +82,7 @@ RSpec.describe "RoadTrips", type: :request do
         "destination": "",
         "api_key": @user.api_key
       }
-      post "/api/v1/roadtrip", params: params
+      post "/api/v1/roadtrip", params: { body: params }
 
       expect(response).to have_http_status(400)
       body = JSON.parse(response.body, symbolize_names: true)
@@ -95,7 +96,7 @@ RSpec.describe "RoadTrips", type: :request do
         "destination": "Santa Fe, NM",
         "api_key": "wrongapikey12345"
       }
-      post "/api/v1/roadtrip", params: params
+      post "/api/v1/roadtrip", params: { body: params }
 
       expect(response).to have_http_status(400)
       body = JSON.parse(response.body, symbolize_names: true)
