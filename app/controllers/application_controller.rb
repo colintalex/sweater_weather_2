@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::API
-   def authenticate_api_key
+    def authenticate_api_key
         @user = User.find_by(api_key: trip_params[:api_key])
-        require 'pry'; binding.pry
         @user.nil? ? bad_api_key : return
     end
 
